@@ -1,5 +1,5 @@
 import React ,{useState} from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'// 
 
 import {preview} from '../assets';
 import {getRandomPrompt} from '../utils';
@@ -8,13 +8,13 @@ import {FormField,Loader} from'../components';
 const CreatePost = () => {
   
      const navigate = useNavigate();
-     const [form,setForm]=useState({
+     const [form, setForm]=useState({
       name: '',
       prompt: '',
       photo: '',
      });   
      const [generatingImg,setGeneratingImg]=useState(false);
-     const [loading,seLoading]=useState(false);
+     const [loading,setLoading]=useState(false);
      
      const generateImage = async () => {
       if (form.prompt) {
@@ -42,9 +42,36 @@ const CreatePost = () => {
       }
     };
 
-     const handleSubmit = () => {
+     const handleSubmit = async (e) => {//e is submit
 
+      e.preventDefault();// so that automatic referesh shouuld not be there
+      
+      if(form.prompt && form.photo){
+        setLoading(true);
+
+        try {
+          setGeneratingImg(true);
+          const response = await fetch('http://localhost:8080/api/v1/post', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(form),
+          });
+          
+          await response.json();
+          navigate('/');// it will navigate to the home to for community post
+        } catch (err) {
+          alert(err);
+        } finally {
+          setLoading(false);
+        }
+      }else{
+        alert('Please enter a promptt and generate an image')
+      }
+       
      }
+
      /* It will take key press event*/
      const handleChange = (e) =>{
        setForm({ ...form, [e.target.name]: e.target.value});
@@ -54,6 +81,7 @@ const CreatePost = () => {
          const randomPrompt= getRandomPrompt(form.prompt);
          setForm({ ...form,prompt: randomPrompt });
      }
+
      return (
     <section className="max-w-7xl mx-auto">
       <div>
@@ -137,7 +165,7 @@ const CreatePost = () => {
               className="mt-3 text-white bg-[#6469ff] font-medium 
               rounded-md text-sm w-full sm:w-auto px-5 py-2.5 text-center"
               >
-                Share with the community
+                {loading ? 'Sharing...' :'Share with the community'}
               </button>
           </div>
       </form>

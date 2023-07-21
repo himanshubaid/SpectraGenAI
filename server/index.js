@@ -1,5 +1,6 @@
 import express from 'express';
 import * as dotenv from 'dotenv';
+dotenv.config({path: "."});// allows us to pull our env variables from .env file
 import cors from 'cors';
 
 import connectDB from './mongodb/connect.js';
@@ -7,7 +8,6 @@ import connectDB from './mongodb/connect.js';
 import postRoutes from './routes/postRoutes.js';
 import dalleRoutes from './routes/dalleRoutes.js';
 
-dotenv.config();// allows us to pull our env variables from .env file
 
 const app=express();
 app.use(cors());
